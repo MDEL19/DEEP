@@ -55,7 +55,7 @@ interface IEntryPoint is IStakeManager, INonceManager {
      * @param userOpHash   - The request unique identifier.
      * @param sender       - The sender of this request.
      * @param nonce        - The nonce used in the request.
-     * @param revertReason - The return bytes from the (reverted) call to "callData".
+     * @param revertReason - The return bytes from the reverted "callData" call.
      */
     event UserOperationRevertReason(
         bytes32 indexed userOpHash,
@@ -69,7 +69,7 @@ interface IEntryPoint is IStakeManager, INonceManager {
      * @param userOpHash   - The request unique identifier.
      * @param sender       - The sender of this request.
      * @param nonce        - The nonce used in the request.
-     * @param revertReason - The return bytes from the (reverted) call to "callData".
+     * @param revertReason - The return bytes from the reverted call to "postOp".
      */
     event PostOpRevertReason(
         bytes32 indexed userOpHash,
