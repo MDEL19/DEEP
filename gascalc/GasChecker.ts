@@ -1,6 +1,6 @@
 // calculate gas usage of different bundle sizes
 import '../test/aa.init'
-import { defaultAbiCoder, hexConcat, parseEther } from 'ethers/lib/utils'
+import { defaultAbiCoder, formatEther, hexConcat, parseEther } from 'ethers/lib/utils'
 import {
   AddressZero,
   checkForGeth,
@@ -321,6 +321,7 @@ export class GasCheckCollector {
 
     const bal = await getBalance(ethersSigner.getAddress())
     if (bal.gt(parseEther('100000000'))) {
+      console.log('bal=', formatEther(bal))
       console.log('DONT use geth miner.. use account 2 instead')
       await checkForGeth()
       ethersSigner = ethers.provider.getSigner(2)
