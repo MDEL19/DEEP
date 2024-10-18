@@ -482,7 +482,7 @@ contract EntryPoint is IEntryPoint, StakeManager, NonceManager, ReentrancyGuard,
             uint256 missingAccountFunds = 0;
             if (paymaster == address(0)) {
                 uint256 bal = balanceOf(sender);
-                missingAccountFunds = bal > requiredPrefund
+                missingAccountFunds = bal >= requiredPrefund
                     ? 0
                     : requiredPrefund - bal;
             }
