@@ -1,10 +1,11 @@
 import { ethers } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { entryPoint07Address } from "viem/account-abstraction";
 
-const name = "EntryPoint";
+const name = "VerifyingPaymaster";
 
-const deployEntryPoint: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployVerifyingPaymaster: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, network } = hre;
   const { deploy } = deployments;
 
@@ -13,30 +14,33 @@ const deployEntryPoint: DeployFunction = async function (hre: HardhatRuntimeEnvi
 
   console.log(`Deploying ${name} from ${deployerAddress} on ${network.name}`);
 
-  const entryPoint = await deploy("EntryPoint", {
+  const initialVerifier = deployerAddress;
+
+  const verifyingPaymaster = await deploy("VerifyingPaymaster", {
     from: deployerAddress,
-    args: [],
+    args: [entryPoint07Address, initialVerifier],
     log: true,
     deterministicDeployment: process.env.SALT ?? true,
     gasLimit: 6e6,
   });
 
-  console.log("EntryPoint deployed to:", entryPoint.address);
+  console.log("VerifyingPaymaster deployed to:", verifyingPaymaster.address);
 
   if (network.name !== "hardhat" && network.name !== "localhost") {
     console.log("Verifying contract on Etherscan");
     try {
       await hre.run("verify:verify", {
-        address: entryPoint.address,
-        constructorArguments: [],
+        address: verifyingPaymaster.address,
+        constructorArguments: [entryPoint07Address, initialVerifier],
       });
-      console.log("EntryPoint verified on Etherscan");
+      console.log("VerifyingPaymaster verified on Etherscan");
     } catch (error) {
       console.error("Error verifying contract:", error);
     }
   }
 };
 
-deployEntryPoint.tags = [name];
+deployVerifyingPaymaster.tags = [name];
+// deployVerifyingPaymaster.dependencies = ["EntryPoint"];
 
-export default deployEntryPoint;
+export default deployVerifyingPaymaster;

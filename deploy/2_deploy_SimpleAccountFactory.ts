@@ -1,34 +1,45 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { DeployFunction } from 'hardhat-deploy/types'
-import { ethers } from 'hardhat'
+import { ethers } from "hardhat";
+import { DeployFunction } from "hardhat-deploy/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+
+const name = "SimpleAccountFactory";
 
 const deploySimpleAccountFactory: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const provider = ethers.provider
-  const from = await provider.getSigner().getAddress()
-  const network = await provider.getNetwork()
-  // only deploy on local test network.
+  const { deployments, network } = hre;
+  const { deploy, get } = deployments;
 
-  const forceDeployFactory = process.argv.join(' ').match(/simple-account-factory/) != null
+  const [deployer] = await ethers.getSigners();
+  const deployerAddress = await deployer.getAddress();
 
-  if (!forceDeployFactory && network.chainId !== 31337 && network.chainId !== 1337) {
-    return
-  }
+  console.log(`Deploying ${name} from ${deployerAddress} on ${network.name}`);
 
-  const entrypoint = await hre.deployments.get('EntryPoint')
-  await hre.deployments.deploy(
-    'SimpleAccountFactory', {
-      from,
-      args: [entrypoint.address],
-      gasLimit: 6e6,
-      log: true,
-      deterministicDeployment: true
-    })
+  const entryPoint = await get("EntryPoint");
 
-  await hre.deployments.deploy('TestCounter', {
-    from,
+  const simpleAccountFactory = await deploy("SimpleAccountFactory", {
+    from: deployerAddress,
+    args: [entryPoint.address],
+    log: true,
     deterministicDeployment: true,
-    log: true
-  })
-}
+    gasLimit: 6e6,
+  });
 
-export default deploySimpleAccountFactory
+  console.log("SimpleAccountFactory deployed to:", simpleAccountFactory.address);
+
+  if (network.name !== "hardhat" && network.name !== "localhost") {
+    console.log("Verifying contract on Etherscan");
+    try {
+      await hre.run("verify:verify", {
+        address: simpleAccountFactory.address,
+        constructorArguments: [entryPoint.address],
+      });
+      console.log("SimpleAccountFactory verified on Etherscan");
+    } catch (error) {
+      console.error("Error verifying contract:", error);
+    }
+  }
+};
+
+deploySimpleAccountFactory.tags = [name];
+deploySimpleAccountFactory.dependencies = ["EntryPoint"];
+
+export default deploySimpleAccountFactory;

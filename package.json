@@ -25,7 +25,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
+    "@nomicfoundation/hardhat-verify": "^2.0.11",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
@@ -68,7 +68,7 @@
     "dotenv": "^16.4.5",
     "ethereumjs-util": "^7.1.0",
     "ethereumjs-wallet": "^1.0.1",
-    "hardhat-deploy": "^0.11.23",
+    "hardhat-deploy": "^0.12.4",
     "hardhat-deploy-ethers": "^0.3.0-beta.11",
     "solidity-coverage": "^0.8.4",
     "source-map-support": "^0.5.19",
