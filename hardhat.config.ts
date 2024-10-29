@@ -22,6 +22,7 @@ const chainIds = {
   sepolia: 11155111,
   "base-mainnet": 8453,
   "base-sepolia": 84532,
+  "night-testnet": 86868,
 };
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
@@ -34,6 +35,9 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
     case "base-mainnet":
     case "base-sepolia":
       jsonRpcUrl = "https://" + chain + ".g.alchemy.com/v2/" + alchemyApiKey;
+      break;
+    case "night-testnet":
+      jsonRpcUrl = "https://rpc-night-testnet-brk51d2fuk.t.conduit.xyz";
       break;
     default:
       jsonRpcUrl = "";
@@ -94,6 +98,7 @@ const config: HardhatUserConfig = {
     sepolia: getChainConfig("sepolia"),
     "base-mainnet": getChainConfig("base-mainnet"),
     "base-sepolia": getChainConfig("base-sepolia"),
+    "night-testnet": getChainConfig("night-testnet"),
   },
   etherscan: {
     apiKey: {
@@ -101,6 +106,7 @@ const config: HardhatUserConfig = {
       sepolia: process.env.ETHERSCAN_API_KEY ?? "",
       "base-mainnet": process.env.BASESCAN_API_KEY ?? "",
       "base-sepolia": process.env.BASESCAN_API_KEY ?? "",
+      "night-testnet": "...",
     },
     customChains: [
       {
@@ -117,6 +123,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api-sepolia.basescan.org/api",
           browserURL: "https://sepolia.basescan.org",
+        },
+      },
+      {
+        network: "night-testnet",
+        chainId: chainIds["night-testnet"],
+        urls: {
+          apiURL: "https://explorer-night-testnet-brk51d2fuk.t.conduit.xyz/api",
+          browserURL: "https://explorer-night-testnet-brk51d2fuk.t.conduit.xyz",
         },
       },
     ],

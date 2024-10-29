@@ -1,23 +1,22 @@
 import { ethers } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { entryPoint07Address } from "viem/account-abstraction";
 
 const name = "SimpleAccountFactory";
 
 const deploySimpleAccountFactory: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, network } = hre;
-  const { deploy, get } = deployments;
+  const { deploy } = deployments;
 
   const [deployer] = await ethers.getSigners();
   const deployerAddress = await deployer.getAddress();
 
   console.log(`Deploying ${name} from ${deployerAddress} on ${network.name}`);
 
-  const entryPoint = await get("EntryPoint");
-
   const simpleAccountFactory = await deploy("SimpleAccountFactory", {
     from: deployerAddress,
-    args: [entryPoint.address],
+    args: [entryPoint07Address],
     log: true,
     deterministicDeployment: true,
     gasLimit: 6e6,
@@ -30,7 +29,7 @@ const deploySimpleAccountFactory: DeployFunction = async function (hre: HardhatR
     try {
       await hre.run("verify:verify", {
         address: simpleAccountFactory.address,
-        constructorArguments: [entryPoint.address],
+        constructorArguments: [entryPoint07Address],
       });
       console.log("SimpleAccountFactory verified on Etherscan");
     } catch (error) {
@@ -40,6 +39,5 @@ const deploySimpleAccountFactory: DeployFunction = async function (hre: HardhatR
 };
 
 deploySimpleAccountFactory.tags = [name];
-deploySimpleAccountFactory.dependencies = ["EntryPoint"];
 
 export default deploySimpleAccountFactory;

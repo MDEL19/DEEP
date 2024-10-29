@@ -41,6 +41,5 @@ const deployVerifyingPaymaster: DeployFunction = async function (hre: HardhatRun
 };
 
 deployVerifyingPaymaster.tags = [name];
-// deployVerifyingPaymaster.dependencies = ["EntryPoint"];
 
 export default deployVerifyingPaymaster;
