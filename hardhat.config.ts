@@ -2,7 +2,7 @@ import '@nomiclabs/hardhat-waffle'
 import '@typechain/hardhat'
 import { HardhatUserConfig, task } from 'hardhat/config'
 import 'hardhat-deploy'
-import '@nomiclabs/hardhat-etherscan'
+import '@nomicfoundation/hardhat-verify'
 
 import 'solidity-coverage'
 
