@@ -54,6 +54,7 @@
   "dependencies": {
     "@nomiclabs/hardhat-etherscan": "^2.1.6",
     "@openzeppelin/contracts": "^5.0.0",
+    "solady": "github:vectorized/solady",
     "@thehubbleproject/bls": "^0.5.1",
     "@typechain/hardhat": "^2.3.0",
     "@types/debug": "^4.1.12",

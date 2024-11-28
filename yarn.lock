@@ -8517,6 +8517,10 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
+"solady@github:vectorized/solady":
+  version "0.0.273"
+  resolved "https://codeload.github.com/vectorized/solady/tar.gz/3d0f41a9b83cbbddc0e2d3844efc0a63809d4db8"
+
 solc@0.7.3:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/solc/-/solc-0.7.3.tgz#04646961bd867a744f63d2b4e3c0701ffdc7d78a"
