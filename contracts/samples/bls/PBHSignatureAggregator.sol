@@ -53,8 +53,6 @@ contract PBHSignatureAggregator is BLSSignatureAggregator {
         pure 
         returns (uint256[2] memory blsSig, ZKProofData[] memory zkData) 
     {
-        if (signature.length != 384) revert InvalidSignatureLength(); // 2*32 + 32 + 32 + 8*32
-
         (blsSig, zkData) = abi.decode(
             signature,
             (uint256[2], ZKProofData[])
@@ -111,6 +109,7 @@ contract PBHSignatureAggregator is BLSSignatureAggregator {
     {
         // Get aggregated BLS signature from parent
         bytes memory aggregatedBLS = super._aggregateSignaturesInternal(userOps);
+        // TODO: Do we need to abi.encode(zkDataArray) here?
         return abi.encode(aggregatedBLS, zkDataArray);
     }
 }
