@@ -61,7 +61,7 @@ contract BLSSignatureAggregator is IAggregator {
 
     /// @inheritdoc IAggregator
     function validateSignatures(PackedUserOperation[] calldata userOps, bytes calldata signature)
-    external view override {
+    external view virtual override {
         require(signature.length == 64, "BLS: invalid signature");
         (uint256[2] memory blsSignature) = abi.decode(signature, (uint256[2]));
 
@@ -77,6 +77,26 @@ contract BLSSignatureAggregator is IAggregator {
         }
         require(BLSOpen.verifyMultiple(blsSignature, blsPublicKeys, messages), "BLS: validateSignatures failed");
     }
+
+    function _validateSignaturesInternal(PackedUserOperation[] calldata userOps, bytes memory signature)
+    internal view {
+        require(signature.length == 64, "BLS: invalid signature");
+        (uint256[2] memory blsSignature) = abi.decode(signature, (uint256[2]));
+
+        uint256 userOpsLen = userOps.length;
+        uint256[4][] memory blsPublicKeys = new uint256[4][](userOpsLen);
+        uint256[2][] memory messages = new uint256[2][](userOpsLen);
+        for (uint256 i = 0; i < userOpsLen; i++) {
+
+            PackedUserOperation memory userOp = userOps[i];
+            blsPublicKeys[i] = getUserOpPublicKey(userOp);
+
+            messages[i] = _userOpToMessage(userOp, _getPublicKeyHash(blsPublicKeys[i]));
+        }
+        require(BLSOpen.verifyMultiple(blsSignature, blsPublicKeys, messages), "BLS: validateSignatures failed");
+    }
+
+
 
     /**
      * get a hash of userOp
@@ -132,7 +152,7 @@ contract BLSSignatureAggregator is IAggregator {
      *    (usually empty, unless account and aggregator support some kind of "multisig"
      */
     function validateUserOpSignature(PackedUserOperation calldata userOp)
-    external view returns (bytes memory sigForUserOp) {
+    external view virtual override returns (bytes memory sigForUserOp) {
         uint256[2] memory signature = abi.decode(userOp.signature, (uint256[2]));
         uint256[4] memory pubkey = getUserOpPublicKey(userOp);
         uint256[2] memory message = _userOpToMessage(userOp, _getPublicKeyHash(pubkey));
@@ -141,6 +161,15 @@ contract BLSSignatureAggregator is IAggregator {
         return "";
     }
 
+    function _validateUserOpSignatureInternal(PackedUserOperation memory userOp)
+    internal view returns (bytes memory sigForUserOp) {
+        uint256[2] memory signature = abi.decode(userOp.signature, (uint256[2]));
+        uint256[4] memory pubkey = getUserOpPublicKey(userOp);
+        uint256[2] memory message = _userOpToMessage(userOp, _getPublicKeyHash(pubkey));
+
+        require(BLSOpen.verifySingle(signature, pubkey, message), "BLS: wrong sig");
+        return "";
+    }
 
     /**
      * aggregate multiple signatures into a single value.
@@ -158,6 +187,24 @@ contract BLSSignatureAggregator is IAggregator {
         BLSHelper.XY memory sum = BLSHelper.sum(points, N);
         return abi.encode(sum.x, sum.y);
     }
+
+    /**
+     * aggregate multiple signatures into a single value.
+     * This method is called off-chain to calculate the signature to pass with handleOps()
+     * bundler MAY use optimized custom code perform this aggregation
+     * @param userOps array of UserOperations to collect the signatures from.
+     * @return aggregatedSignature the aggregated signature
+     */
+    function _aggregateSignaturesInternal(PackedUserOperation[] calldata userOps) internal pure returns (bytes memory aggregatedSignature) {
+        BLSHelper.XY[] memory points = new BLSHelper.XY[](userOps.length);
+        for (uint256 i = 0; i < points.length; i++) {
+            (uint256 x, uint256 y) = abi.decode(userOps[i].signature, (uint256, uint256));
+            points[i] = BLSHelper.XY(x, y);
+        }
+        BLSHelper.XY memory sum = BLSHelper.sum(points, N);
+        return abi.encode(sum.x, sum.y);
+    }
+
 
     /**
      * allow staking for this aggregator

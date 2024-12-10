@@ -16,7 +16,7 @@ interface IAggregator {
     function validateSignatures(
         PackedUserOperation[] calldata userOps,
         bytes calldata signature
-    ) external view;
+    ) external;
 
     /**
      * Validate signature of a single userOp.
@@ -29,7 +29,7 @@ interface IAggregator {
      */
     function validateUserOpSignature(
         PackedUserOperation calldata userOp
-    ) external view returns (bytes memory sigForUserOp);
+    ) external returns (bytes memory sigForUserOp);
 
     /**
      * Aggregate multiple signatures into a single value.
@@ -40,5 +40,5 @@ interface IAggregator {
      */
     function aggregateSignatures(
         PackedUserOperation[] calldata userOps
-    ) external view returns (bytes memory aggregatedSignature);
+    ) external returns (bytes memory aggregatedSignature);
 }
