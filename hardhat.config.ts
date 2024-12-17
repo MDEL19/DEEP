@@ -49,10 +49,14 @@ const config: HardhatUserConfig = {
       optimizer: {
         enabled: true,
         runs: 1000000
-      },
+      }
     },
+    // duplicated because this part is used by 'hardhat coverage'
     compilers: [{
       version: '0.8.28',
+      settings: {
+        evmVersion: 'cancun'
+      }
     }],
     overrides: {
       'contracts/core/EntryPoint.sol': optimizedComilerSettings,
