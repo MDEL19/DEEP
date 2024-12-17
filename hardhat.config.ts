@@ -45,12 +45,15 @@ const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.28',
     settings: {
-      evmVersion: `cancun`,
+      evmVersion: 'cancun',
       optimizer: {
         enabled: true,
         runs: 1000000
-      }
+      },
     },
+    compilers: [{
+      version: '0.8.28',
+    }],
     overrides: {
       'contracts/core/EntryPoint.sol': optimizedComilerSettings,
       'contracts/samples/SimpleAccount.sol': optimizedComilerSettings
