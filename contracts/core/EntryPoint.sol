@@ -30,7 +30,7 @@ contract EntryPoint is IEntryPoint, StakeManager, NonceManager, ReentrancyGuard,
 
     SenderCreator private immutable _senderCreator = new SenderCreator();
 
-    function senderCreator() internal view virtual returns (SenderCreator) {
+    function senderCreator() public view virtual returns (SenderCreator) {
         return _senderCreator;
     }
 
