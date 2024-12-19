@@ -1,6 +1,8 @@
 import { Wallet } from 'ethers'
 import { ethers } from 'hardhat'
 import { expect } from 'chai'
+import { toHex } from 'hardhat/internal/util/bigint'
+
 import {
   ERC1967Proxy__factory,
   EntryPoint,
@@ -166,9 +168,8 @@ describe('SimpleAccount', function () {
 
       // switch deployer contract to an impersonating signer
       const senderCreator = await entryPoint.senderCreator()
-      await (ethersSigner.provider as JsonRpcProvider).send('hardhat_impersonateAccount', [senderCreator])
-      await (ethersSigner.provider as JsonRpcProvider).send('hardhat_setBalance', [senderCreator, parseEther('100').toHexString()])
-      const senderCreatorSigner = await ethers.getSigner(senderCreator)
+      await (ethersSigner.provider as JsonRpcProvider).send('hardhat_setBalance', [senderCreator, toHex(100e18)])
+      const senderCreatorSigner = await ethers.getImpersonatedSigner(senderCreator)
       deployer = deployer.connect(senderCreatorSigner)
 
       const target = await deployer.callStatic.createAccount(ownerAddr, 1234)

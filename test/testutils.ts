@@ -1,4 +1,5 @@
 import { ethers } from 'hardhat'
+import { toHex } from 'hardhat/internal/util/bigint'
 import {
   arrayify,
   hexConcat,
@@ -302,9 +303,8 @@ export async function createAccount (
   const implementation = await accountFactory.accountImplementation()
   const entryPointContract = EntryPoint__factory.connect(entryPoint, ethersSigner)
   const senderCreator = await entryPointContract.senderCreator()
-  await (ethersSigner.provider as JsonRpcProvider).send('hardhat_impersonateAccount', [senderCreator])
-  await (ethersSigner.provider as JsonRpcProvider).send('hardhat_setBalance', [senderCreator, parseEther('100').toHexString()])
-  const senderCreatorSigner = await ethers.getSigner(senderCreator)
+  await (ethersSigner.provider as JsonRpcProvider).send('hardhat_setBalance', [senderCreator, toHex(100e18)])
+  const senderCreatorSigner = await ethers.getImpersonatedSigner(senderCreator)
   await accountFactory.connect(senderCreatorSigner).createAccount(accountOwner, 0)
   const accountAddress = await accountFactory.getAddress(accountOwner, 0)
   const proxy = SimpleAccount__factory.connect(accountAddress, ethersSigner)
