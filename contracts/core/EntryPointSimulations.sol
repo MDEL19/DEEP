@@ -24,7 +24,7 @@ contract EntryPointSimulations is EntryPoint, IEntryPointSimulations {
         _senderCreator = SenderCreator(createdObj);
     }
 
-    function senderCreator() public view virtual override returns (SenderCreator) {
+    function senderCreator() public view virtual override(EntryPoint, IEntryPoint) returns (ISenderCreator) {
         // return the same senderCreator as real EntryPoint.
         // this call is slightly (100) more expensive than EntryPoint's access to immutable member
         return _senderCreator;
