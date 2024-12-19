@@ -840,7 +840,7 @@ describe('EntryPoint', function () {
         const senderCreator = SenderCreator__factory.connect(senderCreatorAddress, ethersSigner)
         await expect(
           senderCreator.createSender('0xdeadbeef', { gasLimit: 1000000 })
-        ).to.be.revertedWith('AAxx should call from EntryPoint')
+        ).to.be.revertedWith('AA97 should call from EntryPoint')
       })
 
       it('should reject create if sender address is wrong', async () => {

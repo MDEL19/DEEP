@@ -1,7 +1,8 @@
 import { ethers } from 'hardhat'
 import {
   arrayify,
-  hexConcat, hexDataSlice,
+  hexConcat,
+  hexDataSlice,
   hexlify,
   hexZeroPad,
   Interface,
@@ -20,6 +21,7 @@ import {
   TestAggregatedAccountFactory, TestPaymasterRevertCustomError__factory, TestERC20__factory
 } from '../typechain'
 import { BytesLike, Hexable } from '@ethersproject/bytes'
+import { JsonRpcProvider } from '@ethersproject/providers'
 import { expect } from 'chai'
 import { Create2Factory } from '../src/Create2Factory'
 import { debugTransaction } from './debugTx'
@@ -298,7 +300,12 @@ export async function createAccount (
   }> {
   const accountFactory = _factory ?? await new SimpleAccountFactory__factory(ethersSigner).deploy(entryPoint)
   const implementation = await accountFactory.accountImplementation()
-  await accountFactory.createAccount(accountOwner, 0)
+  const entryPointContract = EntryPoint__factory.connect(entryPoint, ethersSigner)
+  const senderCreator = await entryPointContract.senderCreator()
+  await (ethersSigner.provider as JsonRpcProvider).send('hardhat_impersonateAccount', [senderCreator])
+  await (ethersSigner.provider as JsonRpcProvider).send('hardhat_setBalance', [senderCreator, parseEther('100').toHexString()])
+  const senderCreatorSigner = await ethers.getSigner(senderCreator)
+  await accountFactory.connect(senderCreatorSigner).createAccount(accountOwner, 0)
   const accountAddress = await accountFactory.getAddress(accountOwner, 0)
   const proxy = SimpleAccount__factory.connect(accountAddress, ethersSigner)
   return {
