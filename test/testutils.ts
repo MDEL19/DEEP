@@ -226,8 +226,8 @@ export async function checkForGeth (): Promise<void> {
   // --allow-insecure-unlock
   if (currentNode.match(/geth/i) != null) {
     for (let i = 0; i < 2; i++) {
-      const acc = await provider.request({ method: 'personal_newAccount', params: ['pass'] }).catch(rethrow)
-      await provider.request({ method: 'personal_unlockAccount', params: [acc, 'pass'] }).catch(rethrow)
+      const acc = await provider.request({ method: 'personal_newAccount', params: ['pass'] }).catch(rethrow())
+      await provider.request({ method: 'personal_unlockAccount', params: [acc, 'pass'] }).catch(rethrow())
       await fund(acc, '10')
     }
   }

@@ -139,24 +139,26 @@ export class GasChecker {
       const addr = await fact.getAddress(this.accountOwner.address, salt)
 
       if (!this.createdAccounts.has(addr)) {
-        // explicit call to fillUseROp with no "entryPoint", to make sure we manually fill everything and
-        // not attempt to fill from blockchain.
-        const op = signUserOp(await fillUserOp({
-          sender: addr,
-          nonce: 0,
-          callGasLimit: 30000,
-          verificationGasLimit: 1000000,
-          // paymasterAndData: paymaster,
-          preVerificationGas: 1,
-          maxFeePerGas: 0
-        }), this.accountOwner, this.entryPoint().address, await provider.getNetwork().then(net => net.chainId))
-        creationOps.push(packUserOp(op))
+        const codeSize = await provider.getCode(addr).then(code => code.length)
+        if (codeSize === 2) {
+          // explicit call to fillUseROp with no "entryPoint", to make sure we manually fill everything and
+          // not attempt to fill from blockchain.
+          const op = signUserOp(await fillUserOp({
+            sender: addr,
+            initCode: this.accountInitCode(fact, salt),
+            nonce: 0,
+            callGasLimit: 30000,
+            verificationGasLimit: 1000000,
+            // paymasterAndData: paymaster,
+            preVerificationGas: 1,
+            maxFeePerGas: 0
+          }), this.accountOwner, this.entryPoint().address, await provider.getNetwork().then(net => net.chainId))
+          creationOps.push(packUserOp(op))
+        }
         this.createdAccounts.add(addr)
       }
 
       this.accounts[addr] = this.accountOwner
-      // deploy if not already deployed.
-      await fact.createAccount(this.accountOwner.address, salt)
       const accountBalance = await GasCheckCollector.inst.entryPoint.balanceOf(addr)
       if (accountBalance.lte(minDepositOrBalance)) {
         await GasCheckCollector.inst.entryPoint.depositTo(addr, { value: minDepositOrBalance.mul(5) })
