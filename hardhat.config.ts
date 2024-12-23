@@ -30,10 +30,11 @@ function getNetwork (name: string): { url: string, accounts: { mnemonic: string 
   // return getNetwork1(`wss://${name}.infura.io/ws/v3/${process.env.INFURA_ID}`)
 }
 
-const optimizedComilerSettings = {
-  version: '0.8.23',
+const optimizedCompilerSettings = {
+  version: '0.8.28',
   settings: {
     optimizer: { enabled: true, runs: 1000000 },
+    evmVersion: 'cancun',
     viaIR: true
   }
 }
@@ -43,16 +44,19 @@ const optimizedComilerSettings = {
 
 const config: HardhatUserConfig = {
   solidity: {
+    // duplicated because this part is used by 'hardhat coverage'
     compilers: [{
-      version: '0.8.23',
+      version: '0.8.24',
       settings: {
+        evmVersion: 'cancun',
+        viaIR: true,
         optimizer: { enabled: true, runs: 1000000 }
       }
-    }],
-    overrides: {
-      'contracts/core/EntryPoint.sol': optimizedComilerSettings,
-      'contracts/samples/SimpleAccount.sol': optimizedComilerSettings
-    }
+    }]
+    // overrides: {
+    //   'contracts/core/EntryPoint.sol': optimizedCompilerSettings,
+    //   'contracts/samples/SimpleAccount.sol': optimizedCompilerSettings
+    // }
   },
   networks: {
     dev: { url: 'http://localhost:8545' },
