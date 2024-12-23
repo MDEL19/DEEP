@@ -3,7 +3,6 @@ import '../test/aa.init'
 import { defaultAbiCoder, hexConcat, parseEther } from 'ethers/lib/utils'
 import {
   AddressZero,
-  checkForGeth,
   createAddress,
   createAccountOwner,
   deployEntryPoint, decodeRevertReason
